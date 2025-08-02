@@ -3,19 +3,19 @@ resource "aws_ecs_cluster" "strapi_cluster" {
 }
 
 resource "aws_ecs_service" "strapi_service" {
-  name            = "strapi-service"
-  cluster         = aws_ecs_cluster.strapi_cluster.id
-  task_definition = aws_ecs_task_definition.strapi_task.arn
-  launch_type     = "FARGATE"
+  name            = var.ecs_service
+  cluster         = var.ecs_cluster
+  task_definition = aws_ecs_task_definition.strapi.arn
   desired_count   = 1
+  launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = [var.subnet_id]         # Replace with your actual subnet variable or ID
-    assign_public_ip = true
-    security_groups  = [var.security_group_id] # Replace with your actual SG variable or ID
+    awsvpc_configuration {
+      subnets         = var.private_subnets
+      security_groups = [var.ecs_security_group]
+      assign_public_ip = true
+    }
   }
 
-  task_definition = aws_ecs_task_definition.strapi.arn
   depends_on = [aws_ecs_task_definition.strapi]
-  ]
 }
