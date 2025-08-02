@@ -50,32 +50,5 @@ variable "ecs_security_group" {
 variable "private_subnets" {
   description = "List of private subnet IDs"
   type        = list(string)
-}
-
-# Optional RDS-related variables
-variable "database_client" {
-  type        = string
-  default     = "postgres"
-  description = "Database client type"
-}
-
-variable "database_name" {
-  type        = string
-  description = "Database name"
-}
-
-variable "database_username" {
-  type        = string
-  description = "Database user"
-}
-
-variable "database_password" {
-  type        = string
-  description = "Database password"
-}
-
-variable "database_port" {
-  type        = number
-  default     = 5432
-  description = "Database port"
+  default     = []
 }
