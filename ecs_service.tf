@@ -15,7 +15,7 @@ resource "aws_ecs_service" "strapi_service" {
     security_groups  = [var.security_group_id] # Replace with your actual SG variable or ID
   }
 
-  depends_on = [
-    aws_ecs_task_definition.strapi_task
+  task_definition = aws_ecs_task_definition.strapi.arn
+  depends_on = [aws_ecs_task_definition.strapi]
   ]
 }
