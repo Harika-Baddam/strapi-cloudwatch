@@ -49,8 +49,13 @@ jobs:
       run: terraform init
 
     - name: Terraform Plan
-      run: terraform plan \
-        -var="strapi_image=$IMAGE_TAG" -out=plan.out
+      run: |
+       IMAGE_TAG=${{ github.sha }}
+       IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+       echo "IMAGE_URI=$IMAGE_URI"
+        terraform plan \
+          -var="strapi_image=$IMAGE_URI" \
+          -out=plan.out
 
     - name: Terraform Apply
       run: terraform apply -auto-approve plan.out
