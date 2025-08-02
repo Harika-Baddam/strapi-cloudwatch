@@ -1,8 +1,8 @@
 
-ecr_repo_url    = "607700977843.dkr.ecr.us-east-2.amazonaws.com/hrk-strapi-app"
-image_tag       = "8e478e3f5a6d54b221b3a209bea84b6de6d80d83"
+ecr_repo_url    = "607700977843.dkr.ecr.us-east-2.amazonaws.com/projects-bhr"
+image_tag       = "02a308c038e86bebab19a84fb38b47e4ac896b9f"
 aws_region      = "us-east-2"
-ecs_cluster     = "strapi-cluster-hrk"
+ecs_cluster     = "strapi-cluster-bhr"
 ecs_service     = "strapi-service"
 subnet_id         = "subnet-xxxxxxxx"
 security_group_id = ""sg-038861db81239cf2a"
