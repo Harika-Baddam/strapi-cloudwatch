@@ -50,7 +50,7 @@ jobs:
 
     - name: Terraform Plan
       run: terraform plan \
-        -var="ecr_repo_url=$REPO_URI" \-var="strapi_image=$IMAGE_URI" -out=plan.out
+        -var="strapi_image=$IMAGE_TAG" -out=plan.out
 
     - name: Terraform Apply
       run: terraform apply -auto-approve plan.out
