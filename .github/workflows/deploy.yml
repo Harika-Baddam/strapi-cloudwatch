@@ -1,4 +1,4 @@
-name: Deploy Strapi to ECS
+name: Deploy Strapi to ECS Fargate
 
 on:
   push:
@@ -7,9 +7,9 @@ on:
 
 env:
   AWS_REGION: us-east-2
-  ECR_REPOSITORY: hrk-strap-app
+  ECR_REPOSITORY: projects-bhr
   ECS_SERVICE: strapi-service
-  ECS_CLUSTER: strapi-cluster
+  ECS_CLUSTER: strapi-cluster-bhr
   TASK_DEFINITION_FAMILY: strapi-task
   LOG_GROUP: /ecs/strapi
 
@@ -35,19 +35,24 @@ jobs:
     - name: Build, tag, and push Docker image
       run: |
         IMAGE_TAG=${{ github.sha }}
-        docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
-        docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
-        docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
+        IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+        docker build -t $IMAGE_URI .
+        docker push $IMAGE_URI
 
-    - name: Update Terraform image tag
-      run: |
-        sed -i "s|image\": \".*\"|image\": \"${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }}\"|g" ./terraform/task-definition.tf
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.6.0
 
-    - name: Initialize and Apply Terraform
-      run: |
-        cd terraform
-        terraform init
-        terraform apply -auto-approve
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Plan
+      run: terraform plan -var="strapi_image=$IMAGE_URI" -out=plan.out
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve plan.out
 
     - name: Force ECS service refresh
       run: |
